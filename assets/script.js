@@ -1,42 +1,47 @@
 var searchFormEl = document.querySelector("#search-form");
-var nameInputEl = document.querySelector("#city-name");
-// var repoContainerEl = document.querySelector("#repos-container");
-// var repoSearchTerm = document.querySelector("#repo-search-term");
+var cityInputEl = document.querySelector("#city-name");
+var weatherKey = "94b1447990dca3cca88ccca71f6b067f";
+var getLatitude = document.getElementById("#lat").value;
+var getLongitude = document.getElementById("#long").value;
+var geoCodeApi = "http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid=" + weatherKey;
 
 var searchCity = function(event){
     event.preventDefault();
         
-    var cityName = nameInputEl.value.trim();
+    var cityName = cityInputEl.value.trim();
     
     if (cityName) {
-        getUserRepos(cityName);
+        getWeather(cityName);
             
-        nameInputEl.value = "";
+        cityInputEl.value = "";
     } else {
         alert("please enter correct city");
     }
 };
 
-var getWeather = function(user) {
-    //format the github api url
-    var apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}";
+var getWeather = function(event) {
+    var apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + getLatitude + "&lon=" + getLongitude + "&exclude=hourly,daily&appid=" + weatherKey;
 
-    //make a rquest to the url
     fetch(apiUrl)
         .then(function(response){
-            // request was successful
             if (response.ok) {
               response.json().then(function(data){
-                displayRepos(data, user);
+                showWeather(data);
               });
             }else {
-            alert("Error: GitHub User Not Found");
+            alert("Weather not found!");
             }
         })
         .catch(function(error){
-            // notice this `.catch()` getting chained onto the end of the `.then()` method
-            alert("Unable to connect to GitHub");
+            alert("Cannot find weather");
         });
     
 
 };
+
+var showWeather = function(response){
+    console.log(response);
+
+};
+
+searchFormEl.addEventListener("submit", searchCity);
